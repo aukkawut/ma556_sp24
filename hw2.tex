@@ -23,6 +23,23 @@
 \usepackage{xcolor}
 \usepackage[shortlabels]{enumitem}
 %\usepackage{lipsum}
+\usepackage{accents}
+
+%stat macro
+\newcommand{\ut}[1]{\underaccent{\tilde}{#1}}
+\renewcommand{\vec}[1]{\ut{#1}}
+\newcommand{\ind}{\stackrel{\text{ind}}{\sim}}
+\newcommand{\iid}{\stackrel{\text{iid}}{\sim}}
+\newcommand{\cas}{\stackrel{\text{a.s}}{\rightarrow}}
+\newcommand{\cp}{\stackrel{p}{\rightarrow}}
+\newcommand{\cd}{\stackrel{d}{\rightarrow}}
+\newcommand{\nx}{x_1,\dots,x_n}
+\newcommand{\ny}{y_1,\dots,y_n}
+\newcommand{\Done}[2]{\text{#1}\left({#2}\right)}
+\newcommand{\Dtwo}[3]{\text{#1}\left({#2},{#3}\right)}
+\newcommand{\cn}{\mathcal{N}}
+
+
 
 \makeatletter
 \patchcmd{\section}{-3.5ex \@plus -1ex \@minus -.2ex}{-3.5ex \@plus -1ex \@minus -.2ex\setlength{\leftskip}{0cm}}{}{}
@@ -50,22 +67,21 @@
 \\
 
 
-Explain what you understand by coherence. Tom said that he has diabetes and
-hypertension with probability $p$, he has diabetes but not hypertension with probability $q$, and he has diabetes with probability $r$. What must happen to avoid incoherence?
+It is believed that $35\%$ of Americans belong to the democratic party. In an opinion poll it was found that $20\%$ of those belonging to the democratic party voted yes and $60\%$ of those belonging to other parties voted yes. Suppose someone selected at random voted yes, can you tell whether she/he is a democratic?
 
 \vspace{\baselineskip}
 \noindent
 \textbf{Solution}
 
-Coherence means that the situation that is described is following the probability axiom. In this case, let's say the event that Tom has diabetes is $D$ and hypertension $H$. Then, we know that
+Let $D$ be an event that a random person is democratic, and $Y = 1$ means that person vote yes for the poll and $Y = 0$ means otherwise. Then,
+\[P(D) = 0.35, \quad P(Y = 1|D) = 0.20, \quad P(Y = 1|D^{'}) = 0.60 \]
+Then,
 \begin{align*}
-    P(D\cap H) &= p\\
-    P(D\cap H^{'}) &= q\\
-    P(D) &= r
+    P(D|Y=1) &= \frac{P(Y=1|D)P(D)}{P(Y=1|D)P(D) + P(Y=1|D^{'}) P(D^{'})}\\
+    &= \frac{(0.20)(0.35)}{(0.20)(0.35) + (0.60)(0.65)}\\
+    &= 0.1522
 \end{align*}
-
-As the first two probabilities can be viewed as the partitioning of $D$ by $H$ and $H^{'}$. In this scenario, we know that $(D\cap H) \cap (D\cap H^{'}) = \{\}$ and since those two are partition of $D$, following the Kolmogorov's axiom, $P(D) = P(D\cap H) +  P(D\cap H^{'}) = p+q$.
-Thus, $r = p + q$ to be coherent.
+Thus, we can say that with the probability of 0.1522, that person is democratic.
 \vspace{\baselineskip}
 
 \noindent
@@ -73,72 +89,99 @@ Thus, $r = p + q$ to be coherent.
 \\
 
 
-Show that for any $A, B > 0$,
-\[A(x-a)^2 + B(x-b)^2 = (A+B)\left(x-\frac{Aa+Bb}{A+B}\right)^2 + \frac{AB}{A+B}\left(a-b\right)^2\]
+I tossed a coin 25 times independently and I got 25 heads. What does this
+information tell you about the next toss?  [Hint: You can assume a priori that the probability of heads is a uniform random variable.]
+
 
 \vspace{\baselineskip}
 \noindent
 \textbf{Solution}
 
-Looking at the LHS, we can see that
+Let $H$ be our prior and assume that $H\sim \text{Unif}(0,1)$. Then, let $E$ be our evidence (number of heads. in this case, 25 heads). This essentially follows the model
 \begin{align*}
-    A(x-a)^2 + B(x-b)^2 &= Ax^2 - 2Aax + Aa^2 + Bx^2 - 2Bbx + Bb^2 \\
-    &= (A+B)x^2 - 2(Aa+Bb)x + Aa^2 + Bb^2 \\
-    &= (A+B)\left(x^2 - 2\frac{Aa+Bb}{A+B} x + \left(\frac{Aa+Bb}{A+B}\right)^2\right) - \left(\frac{Aa+Bb}{A+B}\right)^2 + Aa^2 + Bb^2\\
-    &= (A+B)\left(x - \frac{Aa+Bb}{A+B}\right)^2 - \left(\frac{Aa+Bb}{A+B}\right)^2 + Aa^2 + Bb^2\\
-    &=  (A+B)\left(x - \frac{Aa+Bb}{A+B}\right)^2 - \frac{(Aa)^2 + 2ABab + (Bb)^2 + A(A+B)^2a^2+ B(A+B)^2b^2}{(A+B)^2} \\
-    &=  (A+B)\left(x-\frac{Aa+Bb}{A+B}\right)^2 + \frac{AB}{A+B}\left(a-b\right)^2
+    E|H,p &\sim \text{Binom}(n,p)\\
+    p &\sim \text{Unif}(0,1)
 \end{align*}
-
-
+Here, this is Binomial-Beta conjugate (as $\text{Unif}(0,1)$ is equivalent to $\text{Beta}(1,1)$), and the result should be Beta distribution. To show that, assume that $p\sim \text{Beta}(\alpha,\beta)$, then
+\begin{align*}
+    H|E = x &\propto {n\choose x} p^{x}(1-p)^{n-x} \frac{p^{\alpha-1}(1-p)^{\beta - 1}}{B(\alpha,\beta)}\\
+    &\propto p^{x+\alpha -1} (1-p)^{n-x+\beta - 1}\\
+    &\sim \text{Beta}(x+\alpha, n-x+\beta)
+\end{align*}
+In this case, $x = 25$, $n = 25$, $\alpha = \beta = 1$. Then, $H|E = 25 \sim \text{Beta}(26,1)$. That means, the probability that this will be head given the evidence is $\mathbb{E}[H|E] = \frac{26}{27} = 0.963$.
 
 \newpage
 \noindent
 \Large{\textbf{Problem 3}}\normalsize
 \\
 
-Show that $\frac{P(B)}{P(A)} = \frac{P(B|A)}{P(A|B)}$ where $A$ and $B$ are elements of a Sigma Algebra and $P(\cdot)$ is the associated probability measure. Argue that $\frac{P(B^{'})}{P(A^{'})} = \frac{1-P(B|A^{'})}{1-P(A|B^{'})}$
+Explain the importance of the likelihood principle. Why can Bayesians and
+non-Bayesians disagree about the likelihood principle? What should your stand be? Is the mode (point of maximum) of a likelihood function a random variable?
 
 \vspace{\baselineskip}
 \noindent
 \textbf{Solution}
 
-We can see that from the definition of $P(B|A)$,
-\begin{align*}
-    P(B|A) &= \frac{P(A|B) P(B)}{P(A)} \\
-    P(A)P(B|A) &= P(B)P(A|B)\\
-    \frac{P(B)}{P(A)} &= \frac{P(B|A)}{P(A|B)}
-\end{align*}
-The conditional probability $P(A|B)$ can be viewed as the reduced sample space from the entire sample space to only $B$ because $B$ already happens. Thus, we can use this intuition to see that $1-P(A|B) = P(A^{'}|B)$. This means
-\begin{align*}
-    1-P(A|B^{'}) &= P(A^{'}|B^{'})\\
-    1-P(A|B^{'}) &= \frac{P(A^{'}\cap B^{'})}{P(B^{'})} 
-\end{align*}
-Similarly, $1-P(B|A^{'}) = \frac{P(A^{'}\cap B^{'})}{P(A^{'})}$. Thus, the ratios of both two are 
-\begin{align*}
-    \frac{1-P(B|A^{'})}{1-P(A|B^{'})} &= \frac{\frac{P(A^{'}\cap B^{'})}{P(A^{'})}}{\frac{P(A^{'}\cap B^{'})}{P(B^{'})}}\\
-    &= \frac{P(B^{'})}{P(A^{'})}
-\end{align*}
+We can see that 
 
 \vspace{\baselineskip}
 \noindent
 \Large{\textbf{Problem 4}}\normalsize
 \\
 
-Argue that \[\pi(\theta) \propto \frac{|\theta|}{1+\theta^2},\quad -\infty < \theta < \infty\]
-is improper.
+The joint density of $x_1,\dots x_n$ is
+\[f(\vec{x}) = \frac{\beta^{\alpha}\Gamma(n\bar{x} + \alpha)}{\{\prod_{i=1}^n x!\}\Gamma(\alpha)(\beta + n)^{n\bar{x} + \alpha}}, \; x = 0,1,\dots\]
+
+where $\alpha$ and $\beta$ are fixed known numbers.
+\begin{enumerate}
+    \item Are $\nx$ independent? Are $\nx$ identical? Are $\nx$ exchangeable?
+    \item Find a random variable $y$ such that given $y$, $\nx$ are independent and identically distributed.
+\end{enumerate}
+
+[Hint: Consider Poisson and Gamma distributions.]
 
 \vspace{\baselineskip}
 \noindent
 \textbf{Solution}
 
-Using $u$-substitution, we can see that
+\begin{enumerate}
+    \item $\nx$ are exchangeable because, in this density, each $x_i$ operates under the operation with permutation-invariant (product for the denominator and addition in the mean). Thus, it is exchangeable.
 
+    To show that this is independent or identical, we need to show each distribution of this joint density is independent or identical
+    \item sub 2
+\end{enumerate}
+
+\vspace{\baselineskip}
+\noindent
+\Large{\textbf{Problem 5}}\normalsize
+\\
+
+Let 
 \begin{align*}
-    \int \frac{|\theta|}{1+\theta^2}\; d\theta &= \frac{\text{sgn}(\theta)}{2}\ln\left(x^2 + 1\right) + C
+   \ny, y_{n+1}, \dots y_N | \mu & \ind\mathcal{N}(\mu,\sigma^2)\\
+    \mu &\sim \mathcal{N}(0,\delta^2)
 \end{align*}
+Find the posterior density of $\bar{Y} = \frac{1}{N}\sum_{i=1}^N y_i$ if $\ny$ are observed (data).
 
-However, looking at the domain of it, we already know that $\lim_{x\rightarrow \infty} \ln(x) = \infty$. Thus, this is a divergence integral in its domain, and it can be argued that it is improper.
+
+\vspace{\baselineskip}
+\noindent
+\textbf{Solution}
+
+x
+
+\vspace{\baselineskip}
+\noindent
+\Large{\textbf{Problem 6}}\normalsize
+\\
+
+Let $\ny | \theta \ind \Done{Bernoulli}{\theta}, \theta \sim \Dtwo{Unif}{0}{1}$. Let $\phi = \ln\left(\frac{\theta}{1-\theta}\right)$. Find a
+simulation consistent estimator of $\mathbb{E}[\phi|\vec{y}]$. Suppose $n = 100$ and $\sum_{i=1}^n y_i =25$, find the estimate and give its standard error.
 
 
+\vspace{\baselineskip}
+\noindent
+\textbf{Solution}
+
+x
 \end{document} 
