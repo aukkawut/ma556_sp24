@@ -1,0 +1,144 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathrsfs}
+\usepackage{mathtools}
+\usepackage{fancyvrb}
+\usepackage[margin=1in]{geometry}
+\usepackage{fancyhdr}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{mathrsfs}
+\usepackage{tzplot}
+\usepackage{tikz}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\usepackage{titlesec}
+\usepackage{lmodern}
+\usepackage{etoolbox}
+\usepackage{csquotes}
+\usepackage{xcolor}
+\usepackage[shortlabels]{enumitem}
+%\usepackage{lipsum}
+
+\makeatletter
+\patchcmd{\section}{-3.5ex \@plus -1ex \@minus -.2ex}{-3.5ex \@plus -1ex \@minus -.2ex\setlength{\leftskip}{0cm}}{}{}
+\patchcmd{\subsection}{-3.25ex\@plus -1ex \@minus -.2ex}{3.25ex\@plus -1ex \@minus -.2ex\setlength{\leftskip}{0cm}}{}{}
+\patchcmd{\subsection}{1.5ex \@plus .2ex}{1.5ex \@plus .2ex\setlength{\leftskip}{2cm}}{}{}
+\makeatother
+\titleformat{\section}
+  {\normalfont\fontsize{12}{15}\bfseries}{\thesection}{1em}{}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Aukkawut Ammartayakun}
+\lhead{MA 556 Applied Bayesian Statistics: Homework 1}
+\cfoot{\thepage}
+\title{Homework 1}
+\author{Aukkawut Ammartayakun\\MA 556 Applied Bayesian Statistics}
+\date{Spring 2024}
+\newcommand{\vtt}[1]{%
+  \text{\normalfont\ttfamily\detokenize{#1}}%
+}
+\begin{document}
+
+\maketitle
+\noindent
+\Large{\textbf{Problem 1}}\normalsize
+\\
+
+
+Explain what you understand by coherence. Tom said that he has diabetes and
+hypertension with probability $p$, he has diabetes but not hypertension with probability $q$, and he has diabetes with probability $r$. What must happen to avoid incoherence?
+
+\vspace{\baselineskip}
+\noindent
+\textbf{Solution}
+
+Coherence means that the situation that is described is following the probability axiom. In this case, let's say the event that Tom has diabetes is $D$ and hypertension $H$. Then, we know that
+\begin{align*}
+    P(D\cap H) &= p\\
+    P(D\cap H^{'}) &= q\\
+    P(D) &= r
+\end{align*}
+
+As the first two probabilities can be viewed as the partitioning of $D$ by $H$ and $H^{'}$. In this scenario, we know that $(D\cap H) \cap (D\cap H^{'}) = \{\}$ and since those two are partition of $D$, following the Kolmogorov's axiom, $P(D) = P(D\cap H) +  P(D\cap H^{'}) = p+q$.
+Thus, $r = p + q$ to be coherent.
+\vspace{\baselineskip}
+
+\noindent
+\Large{\textbf{Problem 2}}\normalsize
+\\
+
+
+Show that for any $A, B > 0$,
+\[A(x-a)^2 + B(x-b)^2 = (A+B)\left(x-\frac{Aa+Bb}{A+B}\right)^2 + \frac{AB}{A+B}\left(a-b\right)^2\]
+
+\vspace{\baselineskip}
+\noindent
+\textbf{Solution}
+
+Looking at the LHS, we can see that
+\begin{align*}
+    A(x-a)^2 + B(x-b)^2 &= Ax^2 - 2Aax + Aa^2 + Bx^2 - 2Bbx + Bb^2 \\
+    &= (A+B)x^2 - 2(Aa+Bb)x + Aa^2 + Bb^2 \\
+    &= (A+B)\left(x^2 - 2\frac{Aa+Bb}{A+B} x + \left(\frac{Aa+Bb}{A+B}\right)^2\right) - \left(\frac{Aa+Bb}{A+B}\right)^2 + Aa^2 + Bb^2\\
+    &= (A+B)\left(x - \frac{Aa+Bb}{A+B}\right)^2 - \left(\frac{Aa+Bb}{A+B}\right)^2 + Aa^2 + Bb^2\\
+    &=  (A+B)\left(x - \frac{Aa+Bb}{A+B}\right)^2 - \frac{(Aa)^2 + 2ABab + (Bb)^2 + A(A+B)^2a^2+ B(A+B)^2b^2}{(A+B)^2} \\
+    &=  (A+B)\left(x-\frac{Aa+Bb}{A+B}\right)^2 + \frac{AB}{A+B}\left(a-b\right)^2
+\end{align*}
+
+
+
+\newpage
+\noindent
+\Large{\textbf{Problem 3}}\normalsize
+\\
+
+Show that $\frac{P(B)}{P(A)} = \frac{P(B|A)}{P(A|B)}$ where $A$ and $B$ are elements of a Sigma Algebra and $P(\cdot)$ is the associated probability measure. Argue that $\frac{P(B^{'})}{P(A^{'})} = \frac{1-P(B|A^{'})}{1-P(A|B^{'})}$
+
+\vspace{\baselineskip}
+\noindent
+\textbf{Solution}
+
+We can see that from the definition of $P(B|A)$,
+\begin{align*}
+    P(B|A) &= \frac{P(A|B) P(B)}{P(A)} \\
+    P(A)P(B|A) &= P(B)P(A|B)\\
+    \frac{P(B)}{P(A)} &= \frac{P(B|A)}{P(A|B)}
+\end{align*}
+The conditional probability $P(A|B)$ can be viewed as the reduced sample space from the entire sample space to only $B$ because $B$ already happens. Thus, we can use this intuition to see that $1-P(A|B) = P(A^{'}|B)$. This means
+\begin{align*}
+    1-P(A|B^{'}) &= P(A^{'}|B^{'})\\
+    1-P(A|B^{'}) &= \frac{P(A^{'}\cap B^{'})}{P(B^{'})} 
+\end{align*}
+Similarly, $1-P(B|A^{'}) = \frac{P(A^{'}\cap B^{'})}{P(A^{'})}$. Thus, the ratios of both two are 
+\begin{align*}
+    \frac{1-P(B|A^{'})}{1-P(A|B^{'})} &= \frac{\frac{P(A^{'}\cap B^{'})}{P(A^{'})}}{\frac{P(A^{'}\cap B^{'})}{P(B^{'})}}\\
+    &= \frac{P(B^{'})}{P(A^{'})}
+\end{align*}
+
+\vspace{\baselineskip}
+\noindent
+\Large{\textbf{Problem 4}}\normalsize
+\\
+
+Argue that \[\pi(\theta) \propto \frac{|\theta|}{1+\theta^2},\quad -\infty < \theta < \infty\]
+is improper.
+
+\vspace{\baselineskip}
+\noindent
+\textbf{Solution}
+
+Using $u$-substitution, we can see that
+
+\begin{align*}
+    \int \frac{|\theta|}{1+\theta^2}\; d\theta &= \frac{\text{sgn}(\theta)}{2}\ln\left(x^2 + 1\right) + C
+\end{align*}
+
+However, looking at the domain of it, we already know that $\lim_{x\rightarrow \infty} \ln(x) = \infty$. Thus, this is a divergence integral in its domain, and it can be argued that it is improper.
+
+
+\end{document} 
