@@ -1,0 +1,226 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathrsfs}
+\usepackage{mathtools}
+\usepackage{fancyvrb}
+\usepackage[margin=1in]{geometry}
+\usepackage{fancyhdr}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{mathrsfs}
+\usepackage{tzplot}
+\usepackage{tikz}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\usepackage{titlesec}
+\usepackage{lmodern}
+\usepackage{etoolbox}
+\usepackage{csquotes}
+\usepackage{xcolor}
+\usepackage[shortlabels]{enumitem}
+%\usepackage{lipsum}
+\usepackage{accents}
+\usepackage{minted}
+
+%stat macro
+\newcommand{\ut}[1]{\underaccent{\tilde}{#1}}
+\renewcommand{\vec}[1]{\ut{#1}}
+\newcommand{\ind}{\stackrel{\text{ind}}{\sim}}
+\newcommand{\iid}{\stackrel{\text{iid}}{\sim}}
+\newcommand{\cas}{\stackrel{\text{a.s}}{\rightarrow}}
+\newcommand{\cp}{\stackrel{p}{\rightarrow}}
+\newcommand{\cd}{\stackrel{d}{\rightarrow}}
+\newcommand{\nx}{x_1,\dots,x_n}
+\newcommand{\ny}{y_1,\dots,y_n}
+\newcommand{\Done}[2]{\text{#1}\left({#2}\right)}
+\newcommand{\Dtwo}[3]{\text{#1}\left({#2},{#3}\right)}
+\newcommand{\cn}{\mathcal{N}}
+
+\def\tmp#1 #2\relax{#1}
+\setbox0=\hbox{$\xdef\intfont{%
+    \expandafter\tmp\fontname\textfont3\expandafter\space\space\relax}$}
+\font\tmp=\intfont\space at10pt\relax
+\setbox0=\hbox{$\textfont3=\tmp \displaystyle \int$}
+\dimen0=\ht0 \advance\dimen0 by\dp0 \divide\dimen0 by10 
+\xdef\intsize{\the\dimen0}
+
+\def\dividedimen (#1/#2){\expandafter\ignorept\the
+   \dimexpr\numexpr\number\dimexpr#1\relax
+   *65536/\number\dimexpr#2\relax\relax sp\relax
+}
+{\lccode`\?=`\p \lccode`\!=`\t  \lowercase{\gdef\ignorept#1?!{#1}}}
+
+\def\flexibleint{\def\fxintL{}\def\fxintU{}\futurelet\next\fxintA}
+\def\fxintA{\ifx\next_\expandafter\fxintB\else\expandafter\fxintC\fi}
+\def\fxintB_#1{\def\fxintL{#1}\fxintC}
+\def\fxintC{\futurelet\next\fxintD}
+\def\fxintD{\ifx\next^\expandafter\fxintE\else\expandafter\fxintF\fi}
+\def\fxintE^#1{\def\fxintU{#1}\fxintF}
+\def\fxintF#1{\begingroup
+   \setbox0=\hbox{$\displaystyle{#1}$}%
+   \dimen0=\ht0 \advance\dimen0 by\dp0
+   \setbox1=\hbox{$\vcenter{\copy0}$}%
+   \font\tmp=\intfont\space at\dividedimen(\dimen0/\intsize)pt
+   \lower\dimexpr\dp0-\dp1\hbox{%
+      $\textfont3=\tmp \displaystyle\int_{\fxintL}^{\fxintU}$}
+   \box0
+   \endgroup
+}
+
+
+\makeatletter
+\patchcmd{\section}{-3.5ex \@plus -1ex \@minus -.2ex}{-3.5ex \@plus -1ex \@minus -.2ex\setlength{\leftskip}{0cm}}{}{}
+\patchcmd{\subsection}{-3.25ex\@plus -1ex \@minus -.2ex}{3.25ex\@plus -1ex \@minus -.2ex\setlength{\leftskip}{0cm}}{}{}
+\patchcmd{\subsection}{1.5ex \@plus .2ex}{1.5ex \@plus .2ex\setlength{\leftskip}{2cm}}{}{}
+\makeatother
+\titleformat{\section}
+  {\normalfont\fontsize{12}{15}\bfseries}{\thesection}{1em}{}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Aukkawut Ammartayakun}
+\lhead{MA 556 Applied Bayesian Statistics: Homework 3}
+\cfoot{\thepage}
+\title{Homework 3}
+\author{Aukkawut Ammartayakun\\MA 556 Applied Bayesian Statistics}
+\date{Spring 2024}
+\newcommand{\vtt}[1]{%
+  \text{\normalfont\ttfamily\detokenize{#1}}%
+}
+\begin{document}
+
+\maketitle
+\noindent
+\Large{\textbf{Problem 1}}\normalsize
+\\
+
+
+Let $\nx|\beta \ind \Dtwo{Gamma}{\alpha}{\beta}$. Find the conjugate prior for $\beta$. Present the posterior density of $\beta$.
+
+\vspace{\baselineskip}
+\noindent
+\textbf{Solution}
+
+We can define the likelihood function as
+\begin{align*}L(\beta|\alpha,\nx) &= \prod_{i=1}^n \frac{\beta^{\alpha}x_i^{\alpha-1}e^{-\beta x_i}}{\Gamma(\alpha)}\\
+&= \frac{1}{\left(\Gamma(\alpha)\right)^n}\beta^{n\alpha}\left(\prod_{i=1}^n x_i\right)^{\alpha - 1} \exp\left(-\beta\left(\sum_{i=1}^n x_i\right)\right)
+\end{align*}
+\vspace{\baselineskip}
+
+\noindent
+\Large{\textbf{Problem 2}}\normalsize
+\\
+\begin{enumerate}[(a)]
+\item Let $x|\lambda \sim \Done{Poisson}{\lambda}$ What are the Jeffreys’ priors for $\phi_1 = \sqrt{\lambda}$ and $\phi_2 = \lambda^2$? Find the posterior distribution of $\lambda$ using Jeffrey’s prior for $\lambda$. Discuss its propriety.
+\item Let $x|p \sim \Dtwo{Binomial}{n}{p}$. What are the Jeffreys’ priors for $\phi_1 = \ln(p)$ and $\phi_2 = \ln\left\{\frac{p}{1-p}\right\}$? Find the posterior distribution of $p$ using Jeffreys’ prior for $p$. Discuss its propriety.
+\end{enumerate}
+
+
+\vspace{\baselineskip}
+\noindent
+\textbf{Solution}
+
+a
+
+
+\noindent
+\Large{\textbf{Problem 3}}\normalsize
+\\
+
+Let $y|p \sim\Done{Bernoulli}{p},\; p \sim \Dtwo{Beta}{\mu \tau}{(1-\mu)\tau}$ Discuss whether the procedure to construct the shrinkage prior for $\tau$ is invariant under one-to-one transformation of $\tau$.
+
+\vspace{\baselineskip}
+\noindent
+\textbf{Solution}
+
+x
+
+\vspace{\baselineskip}
+\noindent
+\Large{\textbf{Problem 4}}\normalsize
+\\
+
+Let $\nx | \beta \ind \Dtwo{Gamma}{\alpha}{\beta}$. Discuss how you might specify $\alpha$. Use similar data obtained from an administrative source, 10, 20, 12, 15, 25, 10, 11, 12, 21, 19, to specify $\alpha$ in a simple manner (e.g., method of moments).
+
+
+\vspace{\baselineskip}
+\noindent
+\textbf{Solution}
+
+x
+
+% \vspace{\baselineskip}
+% \noindent
+% \Large{\textbf{Problem 5}}\normalsize
+% \\
+
+% Let 
+% \begin{align*}
+%    \ny, y_{n+1}, \dots y_N | \mu & \ind\mathcal{N}(\mu,\sigma^2)\\
+%     \mu &\sim \mathcal{N}(0,\delta^2)
+% \end{align*}
+% Find the posterior density of $\bar{Y} = \frac{1}{N}\sum_{i=1}^N y_i$ if $\ny$ are observed (data).
+
+
+% \vspace{\baselineskip}
+% \noindent
+% \textbf{Solution}
+
+% We already know from the lecture that the posterior distribution $\mu|\vec{y} \sim \mathcal{N}\left(\frac{
+% \delta^2}{\delta^2 + \frac{\sigma^{2}}{n}} \bar{y}, \left(1-\frac{
+% \delta^2}{\delta^2 + \frac{\sigma^{2}}{n}}\right)\delta^2\right)$
+% and we also know that $y_{n+1}, \dots y_N | \vec{y}$ is also normal with same mean and variance of $\sigma^2 +\left(1-\frac{
+% \delta^2}{\delta^2 + \frac{\sigma^{2}}{n}}\right)\delta^2$. Thus, the posterior density of $\bar{Y}$ is a mean transformed of that said distribution which will result in
+% $\bar{Y}|\vec{y} \sim \mathcal{N}\left(\frac{N}{N}\frac{\delta^2}{\delta^2 + \frac{\sigma^{2}}{n}} \bar{y}, \frac{N}{N^2}\left(\sigma^2 +\left(1-\frac{\delta^2}{\delta^2 +\frac{\sigma^{2}}{n}}\right)\delta^2\right)\right)$
+
+% \vspace{\baselineskip}
+% \noindent
+% \Large{\textbf{Problem 6}}\normalsize
+% \\
+
+% Let $\ny | \theta \ind \Done{Bernoulli}{\theta}, \theta \sim \Dtwo{Unif}{0}{1}$. Let $\phi = \ln\left(\frac{\theta}{1-\theta}\right)$. Find a
+% simulation consistent estimator of $\mathbb{E}[\phi|\vec{y}]$. Suppose $n = 100$ and $\sum_{i=1}^n y_i =25$, find the estimate and give its standard error.
+
+
+% \vspace{\baselineskip}
+% \noindent
+% \textbf{Solution}
+
+% The posterior distribution $\theta | \vec{y}$ can be viewed similarly to problem 2 which is essentially 
+% \[\theta | \vec{y} \sim \Dtwo{Beta}{1+\sum_{i=1}^n y_i}{1+n-\sum_{i=1}^ny_i}\]
+% So, if we sample $\theta_1,\dots \theta_m$ from this distribution (or more specifically, $\Dtwo{Beta}{26}{76}$), we can construct the simulation consistent estimator
+% \[\frac{1}{m}\sum_{j=1}^m \phi(\theta_i) \cas \mathbb{E}[\phi|\vec{y}]\]
+% This logit transformed distribution is then be
+% \begin{align*}
+%     \phi(\theta|\alpha,\beta) &= f(\phi^{-1}(\theta)|\alpha,\beta)\left|\frac{d\phi^{-1}(\theta)}{d\theta}\right|\\
+%     &=\frac{\left(\frac{e^\theta}{1 + e^\theta}\right)^{\alpha - 1}\left(1 - \frac{e^\theta}{1 + e^\theta}\right)^{\beta - 1}}{B(\alpha, \beta)} \cdot \frac{e^\theta}{(1 + e^\theta)^2}
+% \end{align*}
+% Then, the analytical variance would be 
+% \[Var(\phi(\theta)) = \flexibleint_{-\infty}^{\infty}{\theta^2 \frac{\left(\frac{e^\theta}{1 + e^\theta}\right)^{\alpha - 1}\left(1 - \frac{e^\theta}{1 + e^\theta}\right)^{\beta - 1}}{B(\alpha, \beta)} \cdot \frac{e^\theta}{(1 + e^\theta)^2} d\theta} - \left(\flexibleint_{-\infty}^{\infty}{\theta\frac{\left(\frac{e^\theta}{1 + e^\theta}\right)^{\alpha - 1}\left(1 - \frac{e^\theta}{1 + e^\theta}\right)^{\beta - 1}}{B(\alpha, \beta)} \cdot \frac{e^\theta}{(1 + e^\theta)^2} d\theta}\right)^2\]
+% and the standard error of this estimator then can be approximated with $SE\left(\frac{1}{m}\sum_{j=1}^m \phi(\theta_i)\right) = \sqrt{\frac{Var(\phi(\theta))}{m}}$. For the finite sample ($m=1000$), the approximation of variance with sample variance and the standard error will be $\frac{0.223}{\sqrt{1000}} = 0.0071$. 
+% \newpage
+% \section*{Appendix}
+% \noindent
+% \textbf{Code for Problem 6}
+% \begin{minted}{python}
+% import numpy as np
+% from scipy.stats import beta
+% #define parameters
+% alpha = 26
+% beta_param = 76
+% num_samples = 1000
+% #drawing samples
+% theta_samples = beta.rvs(alpha, beta_param, size=num_samples)
+% #logit transform
+% phi_samples = np.log(theta_samples / (1 - theta_samples))
+% #SD and SE
+% standard_deviation = np.std(phi_samples, ddof=1)
+% standard_error = standard_deviation / np.sqrt(num_samples)
+% #Print it out
+% print(f"Standard Deviation: {standard_deviation}")
+% print(f"Standard Error: {standard_error}")
+% \end{minted}
+\end{document} 

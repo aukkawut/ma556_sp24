@@ -24,6 +24,7 @@
 \usepackage[shortlabels]{enumitem}
 %\usepackage{lipsum}
 \usepackage{accents}
+\usepackage{minted}
 
 %stat macro
 \newcommand{\ut}[1]{\underaccent{\tilde}{#1}}
@@ -39,6 +40,36 @@
 \newcommand{\Dtwo}[3]{\text{#1}\left({#2},{#3}\right)}
 \newcommand{\cn}{\mathcal{N}}
 
+\def\tmp#1 #2\relax{#1}
+\setbox0=\hbox{$\xdef\intfont{%
+    \expandafter\tmp\fontname\textfont3\expandafter\space\space\relax}$}
+\font\tmp=\intfont\space at10pt\relax
+\setbox0=\hbox{$\textfont3=\tmp \displaystyle \int$}
+\dimen0=\ht0 \advance\dimen0 by\dp0 \divide\dimen0 by10 
+\xdef\intsize{\the\dimen0}
+
+\def\dividedimen (#1/#2){\expandafter\ignorept\the
+   \dimexpr\numexpr\number\dimexpr#1\relax
+   *65536/\number\dimexpr#2\relax\relax sp\relax
+}
+{\lccode`\?=`\p \lccode`\!=`\t  \lowercase{\gdef\ignorept#1?!{#1}}}
+
+\def\flexibleint{\def\fxintL{}\def\fxintU{}\futurelet\next\fxintA}
+\def\fxintA{\ifx\next_\expandafter\fxintB\else\expandafter\fxintC\fi}
+\def\fxintB_#1{\def\fxintL{#1}\fxintC}
+\def\fxintC{\futurelet\next\fxintD}
+\def\fxintD{\ifx\next^\expandafter\fxintE\else\expandafter\fxintF\fi}
+\def\fxintE^#1{\def\fxintU{#1}\fxintF}
+\def\fxintF#1{\begingroup
+   \setbox0=\hbox{$\displaystyle{#1}$}%
+   \dimen0=\ht0 \advance\dimen0 by\dp0
+   \setbox1=\hbox{$\vcenter{\copy0}$}%
+   \font\tmp=\intfont\space at\dividedimen(\dimen0/\intsize)pt
+   \lower\dimexpr\dp0-\dp1\hbox{%
+      $\textfont3=\tmp \displaystyle\int_{\fxintL}^{\fxintU}$}
+   \box0
+   \endgroup
+}
 
 
 \makeatletter
@@ -122,7 +153,7 @@ non-Bayesians disagree about the likelihood principle? What should your stand be
 \noindent
 \textbf{Solution}
 
-We can see that 
+The likelihood principle states that, once the data have been observed, all the information about the parameters is contained in the likelihood function. In the Bayesian sense, you need to get the data to be able to use this principle, while non-Bayesian can assume hypothetical data (might/might not occur) to infer the parameters, which are considered incoherent in Bayesian's view. I would stick with the Bayesian one. And if we have the data, mode of a likelihood would be constant but only that we have the data.
 
 \vspace{\baselineskip}
 \noindent
@@ -145,10 +176,21 @@ where $\alpha$ and $\beta$ are fixed known numbers.
 \textbf{Solution}
 
 \begin{enumerate}
-    \item $\nx$ are exchangeable because, in this density, each $x_i$ operates under the operation with permutation-invariant (product for the denominator and addition in the mean). Thus, it is exchangeable.
-
-    To show that this is independent or identical, we need to show each distribution of this joint density is independent or identical
-    \item sub 2
+    \item $\nx$ are exchangeable because, in this density, each $x_i$ operates under the operation with permutation-invariant (product for the denominator and addition in the mean). Thus, it is exchangeable and identical. However, it does not say anything about independent.
+    \item Consider the case of the Poisson-Gamma mixture
+    \begin{align*}
+    \nx | \lambda &\iid \Done{Poisson}{\lambda}\\
+    \lambda &\sim \Dtwo{Gamma}{\alpha}{\beta}
+    \end{align*}
+    Then, joint density is
+    \begin{align*}
+        f(\vec{x}|\lambda) &= \frac{\beta^{\alpha}}{\Gamma(\alpha)}\lambda^{\alpha -1}e^{-\beta \lambda} \prod_{i=1}^n \frac{\lambda^{x_i}e^{-\lambda}}{x_i!}\\
+        f(\vec{x}|\lambda) &= \frac{\beta^{\alpha}}{\Gamma(\alpha)}\lambda^{\alpha -1}e^{(1-\beta)\lambda}\frac{\lambda^{n\bar{x}}}{\{\prod_{i=1}^n x_i!\}}\\
+        f(\vec{x}) &= \int_{0}^{\infty} \frac{\beta^{\alpha}}{\Gamma(\alpha)}\lambda^{\alpha -1}e^{-(n+\beta)\lambda}\frac{\lambda^{n\bar{x}}}{\{\prod_{i=1}^n x_i!\}} \; d\lambda\\
+        f(\vec{x}) &=  \frac{\beta^{\alpha}}{\Gamma(\alpha){\{\prod_{i=1}^n x_i!\}}} \int_{0}^{\infty}\lambda^{n\bar{x} + \alpha -1}e^{-(n+\beta)\lambda} \; d\lambda\\
+        f(\vec{x}) &= \frac{\beta^{\alpha}}{\Gamma(\alpha){\{\prod_{i=1}^n x_i!\}}}\frac{\Gamma(n\bar{x} + \alpha)}{(\beta+n)^{n\bar{x}+\alpha}}
+    \end{align*}
+    Thus, $y\sim\Dtwo{Gamma}{\alpha}{\beta}$ makes this distribution iid.
 \end{enumerate}
 
 \vspace{\baselineskip}
@@ -168,7 +210,12 @@ Find the posterior density of $\bar{Y} = \frac{1}{N}\sum_{i=1}^N y_i$ if $\ny$ a
 \noindent
 \textbf{Solution}
 
-x
+We already know from the lecture that the posterior distribution $\mu|\vec{y} \sim \mathcal{N}\left(\frac{
+\delta^2}{\delta^2 + \frac{\sigma^{2}}{n}} \bar{y}, \left(1-\frac{
+\delta^2}{\delta^2 + \frac{\sigma^{2}}{n}}\right)\delta^2\right)$
+and we also know that $y_{n+1}, \dots y_N | \vec{y}$ is also normal with same mean and variance of $\sigma^2 +\left(1-\frac{
+\delta^2}{\delta^2 + \frac{\sigma^{2}}{n}}\right)\delta^2$. Thus, the posterior density of $\bar{Y}$ is a mean transformed of that said distribution which will result in
+$\bar{Y}|\vec{y} \sim \mathcal{N}\left(\frac{N}{N}\frac{\delta^2}{\delta^2 + \frac{\sigma^{2}}{n}} \bar{y}, \frac{N}{N^2}\left(\sigma^2 +\left(1-\frac{\delta^2}{\delta^2 +\frac{\sigma^{2}}{n}}\right)\delta^2\right)\right)$
 
 \vspace{\baselineskip}
 \noindent
@@ -183,5 +230,38 @@ simulation consistent estimator of $\mathbb{E}[\phi|\vec{y}]$. Suppose $n = 100$
 \noindent
 \textbf{Solution}
 
-x
+The posterior distribution $\theta | \vec{y}$ can be viewed similarly to problem 2 which is essentially 
+\[\theta | \vec{y} \sim \Dtwo{Beta}{1+\sum_{i=1}^n y_i}{1+n-\sum_{i=1}^ny_i}\]
+So, if we sample $\theta_1,\dots \theta_m$ from this distribution (or more specifically, $\Dtwo{Beta}{26}{76}$), we can construct the simulation consistent estimator
+\[\frac{1}{m}\sum_{j=1}^m \phi(\theta_i) \cas \mathbb{E}[\phi|\vec{y}]\]
+This logit transformed distribution is then be
+\begin{align*}
+    \phi(\theta|\alpha,\beta) &= f(\phi^{-1}(\theta)|\alpha,\beta)\left|\frac{d\phi^{-1}(\theta)}{d\theta}\right|\\
+    &=\frac{\left(\frac{e^\theta}{1 + e^\theta}\right)^{\alpha - 1}\left(1 - \frac{e^\theta}{1 + e^\theta}\right)^{\beta - 1}}{B(\alpha, \beta)} \cdot \frac{e^\theta}{(1 + e^\theta)^2}
+\end{align*}
+Then, the analytical variance would be 
+\[Var(\phi(\theta)) = \flexibleint_{-\infty}^{\infty}{\theta^2 \frac{\left(\frac{e^\theta}{1 + e^\theta}\right)^{\alpha - 1}\left(1 - \frac{e^\theta}{1 + e^\theta}\right)^{\beta - 1}}{B(\alpha, \beta)} \cdot \frac{e^\theta}{(1 + e^\theta)^2} d\theta} - \left(\flexibleint_{-\infty}^{\infty}{\theta\frac{\left(\frac{e^\theta}{1 + e^\theta}\right)^{\alpha - 1}\left(1 - \frac{e^\theta}{1 + e^\theta}\right)^{\beta - 1}}{B(\alpha, \beta)} \cdot \frac{e^\theta}{(1 + e^\theta)^2} d\theta}\right)^2\]
+and the standard error of this estimator then can be approximated with $SE\left(\frac{1}{m}\sum_{j=1}^m \phi(\theta_i)\right) = \sqrt{\frac{Var(\phi(\theta))}{m}}$. For the finite sample ($m=1000$), the approximation of variance with sample variance and the standard error will be $\frac{0.223}{\sqrt{1000}} = 0.0071$. 
+\newpage
+\section*{Appendix}
+\noindent
+\textbf{Code for Problem 6}
+\begin{minted}{python}
+import numpy as np
+from scipy.stats import beta
+#define parameters
+alpha = 26
+beta_param = 76
+num_samples = 1000
+#drawing samples
+theta_samples = beta.rvs(alpha, beta_param, size=num_samples)
+#logit transform
+phi_samples = np.log(theta_samples / (1 - theta_samples))
+#SD and SE
+standard_deviation = np.std(phi_samples, ddof=1)
+standard_error = standard_deviation / np.sqrt(num_samples)
+#Print it out
+print(f"Standard Deviation: {standard_deviation}")
+print(f"Standard Error: {standard_error}")
+\end{minted}
 \end{document} 
